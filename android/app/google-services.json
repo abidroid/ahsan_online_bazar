@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "858765239468",
+    "project_id": "ahsan-online-bazar",
+    "storage_bucket": "ahsan-online-bazar.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:858765239468:android:f9fb95ca63cee2d497eb09",
+        "android_client_info": {
+          "package_name": "com.ahsan.ahsan_online_bazar"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAJ18X4_0uuqEqPIeJv2pwSWpCjaUmxzX0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
