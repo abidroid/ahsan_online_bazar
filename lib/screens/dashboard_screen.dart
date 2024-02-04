@@ -1,5 +1,7 @@
+import 'package:ahsan_online_bazar/screens/product_list_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:gap/gap.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -39,22 +41,41 @@ class _DashboardScreenState extends State<DashboardScreen> {
             print('**************************');
             print(listOfCategories.length);
 
-            return ListView.builder(
-                itemCount: listOfCategories.length,
-                itemBuilder: (context, index) {
-                  Map<String, dynamic> category = listOfCategories[index];
-                  return Card(
-                    child: Row(
-                      children: [
-                        SizedBox(
-                          width: 100,
-                          height: 100,
-                          child: Image.network(category['image']),
+            return Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: ListView.builder(
+                  itemCount: listOfCategories.length,
+                  itemBuilder: (context, index) {
+                    Map<String, dynamic> category = listOfCategories[index];
+                    return InkWell(
+                      onTap: (){
+
+                        Navigator.of(context).push(MaterialPageRoute(builder: (context){
+                          return ProductListScreen(category: category);
+                        }));
+                      },
+                      child: Card(
+                        color: Colors.green,
+                        child: Padding(
+                          padding: const EdgeInsets.all(12),
+                          child: Row(
+                            children: [
+                              SizedBox(
+                                width: 100,
+                                height: 100,
+                                child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(8),
+                                    child: Image.network(category['image'], fit: BoxFit.cover,)),
+                              ),
+                              const Gap(16),
+                              Text(category['title'], style: const TextStyle(fontSize: 18),),
+                            ],
+                          ),
                         ),
-                      ],
-                    ),
-                  );
-                });
+                      ),
+                    );
+                  }),
+            );
           }
 
           return const Center(child: CircularProgressIndicator(),);

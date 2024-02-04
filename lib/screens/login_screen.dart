@@ -1,6 +1,8 @@
 import 'package:ahsan_online_bazar/screens/dashboard_screen.dart';
 import 'package:ahsan_online_bazar/screens/sign_up_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -10,7 +12,6 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-
   late TextEditingController emailC, passC;
 
   @override
@@ -50,22 +51,50 @@ class _LoginScreenState extends State<LoginScreen> {
                   hintText: 'Password', border: OutlineInputBorder()),
             ),
             const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: () async {
+                String email = emailC.text.trim();
+                String pass = passC.text.trim();
 
+                print(email);
+                print(pass);
+                try {
+                  UserCredential? userCredential =
+                      await FirebaseAuth.instance.signInWithEmailAndPassword(
+                    email: email,
+                    password: pass,
+                  );
 
-            ElevatedButton(onPressed: (){
-              Navigator.of(context).push(MaterialPageRoute(builder: (context){
-                return const DashboardScreen();
-              }));
-            }, child: const Text('Login'),),
+                  if (userCredential.user != null) {
+                    // go to dashboard screen
+
+                    Navigator.of(context)
+                        .push(MaterialPageRoute(builder: (context) {
+                      return const DashboardScreen();
+                    }));
+                  }
+                } on FirebaseAuthException catch (e) {
+                  if (e.code == 'user-not-found') {
+                    Fluttertoast.showToast(msg: 'User not found');
+                  } else if (e.code == 'wrong-password') {
+                    Fluttertoast.showToast(msg: 'Wrong password');
+                  }
+                }
+              },
+              child: const Text('Login'),
+            ),
             TextButton(
               onPressed: () {},
               child: const Text('Forgot Password'),
             ),
-            TextButton(onPressed: (){
-              Navigator.of(context).push(MaterialPageRoute(builder: (context){
-                return const SignUpScreen();
-              }));
-            }, child: const Text('Not Registered Yet ? Register Now'))
+            TextButton(
+                onPressed: () {
+                  Navigator.of(context)
+                      .push(MaterialPageRoute(builder: (context) {
+                    return const SignUpScreen();
+                  }));
+                },
+                child: const Text('Not Registered Yet ? Register Now'))
           ],
         ),
       ),
