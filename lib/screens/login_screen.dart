@@ -1,4 +1,5 @@
 import 'package:ahsan_online_bazar/screens/dashboard_screen.dart';
+import 'package:ahsan_online_bazar/screens/email_verification_screen.dart';
 import 'package:ahsan_online_bazar/screens/sign_up_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -66,12 +67,32 @@ class _LoginScreenState extends State<LoginScreen> {
                   );
 
                   if (userCredential.user != null) {
-                    // go to dashboard screen
 
-                    Navigator.of(context)
-                        .push(MaterialPageRoute(builder: (context) {
-                      return const DashboardScreen();
-                    }));
+                    // check if email is verified
+                    // if not go to verification screen
+
+                    if( FirebaseAuth.instance.currentUser!.emailVerified){
+                      // go to dashboard screen
+
+                      Navigator.of(context)
+                          .push(MaterialPageRoute(builder: (context) {
+                        return const DashboardScreen();
+                      }));
+
+                    }else{
+
+                      // go to dashboard screen
+
+                      Navigator.of(context)
+                          .push(MaterialPageRoute(builder: (context) {
+                        return const EmailVerificationScreen();
+                      }));
+                    }
+
+
+
+
+
                   }
                 } on FirebaseAuthException catch (e) {
                   if (e.code == 'user-not-found') {
