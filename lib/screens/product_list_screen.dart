@@ -17,17 +17,17 @@ class _ProductListScreenState extends State<ProductListScreen> {
     return Scaffold(
       floatingActionButton: FloatingActionButton(onPressed: (){
 
-       // if( FirebaseAuth.instance.currentUser != null ){
-       //   // Add Product Screen
-       //   Navigator.of(context).push(MaterialPageRoute(builder: (context){
-       //     return const AddProductScreen();
-       //   }));
-       // }else{
+       if( FirebaseAuth.instance.currentUser != null ){
+         // Add Product Screen
+         Navigator.of(context).push(MaterialPageRoute(builder: (context){
+           return const AddProductScreen();
+         }));
+       }else{
          // Login Screen
          Navigator.of(context).push(MaterialPageRoute(builder: (context){
            return const LoginScreen();
          }));
-      // }
+       }
 
 
       }, child: const Icon(Icons.add),),
