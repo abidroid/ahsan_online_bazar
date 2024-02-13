@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:gap/gap.dart';
 
 class TestScreen extends StatefulWidget {
   const TestScreen({super.key});
@@ -34,10 +35,28 @@ class _TestScreenState extends State<TestScreen> {
                         .toList();
 
                     return DropdownButton<String>(
+                        isExpanded: true,
                         value: selectedCategory,
                         items: listOfCategories.map((e) {
                           return DropdownMenuItem<String>(
-                              value: e['title'], child: Text(e['title']));
+                              value: e['title'],
+                              child: Row(
+                                children: [
+                                  SizedBox(
+                                    height: 80,
+                                    width: 80,
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(16),
+                                      child: Image.network(
+                                        e['image'],
+                                        fit: BoxFit.fill,
+                                      ),
+                                    ),
+                                  ),
+                                  const Gap(10),
+                                  Text(e['title']),
+                                ],
+                              ));
                         }).toList(),
                         onChanged: (newValue) {
                           setState(() {
