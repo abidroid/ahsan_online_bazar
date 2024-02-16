@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -12,9 +13,32 @@ class AddProductScreen extends StatefulWidget {
 
 class _AddProductScreenState extends State<AddProductScreen> {
 
+  CollectionReference categoriesRef =
+  FirebaseFirestore.instance.collection('categories');
+
   bool imagesPicked = false;
   List<File>? images =[];
 
+  String selectedCategory = 'Mobile';
+
+  late TextEditingController titleC, descC, priceC;
+
+  @override
+  initState(){
+
+    titleC = TextEditingController();
+    descC = TextEditingController();
+    priceC = TextEditingController();
+    super.initState();
+  }
+
+  @override
+  dispose() {
+    titleC.dispose();
+    descC.dispose();
+    priceC.dispose();
+    super.dispose();
+  }
 
   selectImagesToDisplay() async {
 
@@ -45,24 +69,62 @@ class _AddProductScreenState extends State<AddProductScreen> {
           child: SingleChildScrollView(
             child: Column(
               children: [
+
+                // Show Dropdown
+
+                StreamBuilder<QuerySnapshot>(
+                    stream: categoriesRef.snapshots(),
+                    builder: (context, snapshot){
+
+                      if( snapshot.hasData){
+
+                        var listOfCategories = snapshot.data!.docs;
+
+                        return DropdownButton<String>(
+
+                          isExpanded: true,
+                            value: selectedCategory,
+                            items: listOfCategories.map((category) {
+                          return DropdownMenuItem<String>(
+                              value: category['title'],
+                              child: Text(category['title']));
+                        }).toList(), onChanged: (selectedValue){
+
+                              setState(() {
+                                selectedCategory = selectedValue!;
+                              });
+                        });
+
+                      }else{
+                        return const CircularProgressIndicator();
+                      }
+
+
+                }),
+
+
+
                 TextField(
-                  decoration: InputDecoration(
+                  controller: titleC,
+                  decoration: const InputDecoration(
                       hintText: 'Title', border: OutlineInputBorder()),
                 ),
                 const SizedBox(
                   height: 16,
                 ),
                 TextField(
+                  controller: descC,
                   maxLines: 4,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                       hintText: 'Description', border: OutlineInputBorder()),
                 ),
                 const SizedBox(
                   height: 16,
                 ),
                 TextField(
+                  controller: priceC,
                   keyboardType: TextInputType.number,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                       hintText: 'Price', border: OutlineInputBorder()),
                 ),
 
@@ -94,6 +156,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
 
                 const SizedBox(height: 16,),
                 ElevatedButton.icon(onPressed: (){
+
                 },
                   icon: const Icon(Icons.photo),
                   label: const Text('Post Information'),),

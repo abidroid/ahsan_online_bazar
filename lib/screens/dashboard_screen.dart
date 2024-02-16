@@ -83,4 +83,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       ),
     );
   }
+
+  // function to return different colors for category title
+
 }
