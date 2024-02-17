@@ -55,7 +55,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         }));
                       },
                       child: Card(
-                        color: Colors.green,
+                        color: getCardColor(category['title']),
                         child: Padding(
                           padding: const EdgeInsets.all(12),
                           child: Row(
@@ -68,7 +68,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                     child: Image.network(category['image'], fit: BoxFit.cover,)),
                               ),
                               const Gap(16),
-                              Text(category['title'], style: const TextStyle(fontSize: 18),),
+                              Text(category['title'], style: const TextStyle(fontSize: 18, color: Colors.white),),
                             ],
                           ),
                         ),
@@ -85,5 +85,19 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   // function to return different colors for category title
+
+  Color getCardColor( String categoryName ){
+
+    if( categoryName == 'Mobile'){
+      return Colors.green;
+    }else if( categoryName == 'Home Decoration'){
+      return Colors.pink;
+    }else if( categoryName == 'Laptops'){
+      return Colors.blue;
+    }else{
+      return Colors.teal;
+    }
+  }
+
 
 }

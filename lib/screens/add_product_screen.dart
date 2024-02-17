@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -12,20 +13,18 @@ class AddProductScreen extends StatefulWidget {
 }
 
 class _AddProductScreenState extends State<AddProductScreen> {
-
   CollectionReference categoriesRef =
-  FirebaseFirestore.instance.collection('categories');
+      FirebaseFirestore.instance.collection('categories');
 
   bool imagesPicked = false;
-  List<File>? images =[];
+  List<File>? images = [];
 
   String selectedCategory = 'Mobile';
 
   late TextEditingController titleC, descC, priceC;
 
   @override
-  initState(){
-
+  initState() {
     titleC = TextEditingController();
     descC = TextEditingController();
     priceC = TextEditingController();
@@ -41,22 +40,17 @@ class _AddProductScreenState extends State<AddProductScreen> {
   }
 
   selectImagesToDisplay() async {
-
     List<XFile> xFiles = await ImagePicker().pickMultiImage();
 
-    if( xFiles.isEmpty) return;
+    if (xFiles.isEmpty) return;
 
-    for( var xFile in xFiles){
-
-      images?.add( File(xFile.path));
+    for (var xFile in xFiles) {
+      images?.add(File(xFile.path));
     }
 
     imagesPicked = true;
-    setState(() {
-
-    });
+    setState(() {});
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -69,40 +63,31 @@ class _AddProductScreenState extends State<AddProductScreen> {
           child: SingleChildScrollView(
             child: Column(
               children: [
-
                 // Show Dropdown
 
                 StreamBuilder<QuerySnapshot>(
                     stream: categoriesRef.snapshots(),
-                    builder: (context, snapshot){
-
-                      if( snapshot.hasData){
-
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData) {
                         var listOfCategories = snapshot.data!.docs;
 
                         return DropdownButton<String>(
-
-                          isExpanded: true,
+                            isExpanded: true,
                             value: selectedCategory,
                             items: listOfCategories.map((category) {
-                          return DropdownMenuItem<String>(
-                              value: category['title'],
-                              child: Text(category['title']));
-                        }).toList(), onChanged: (selectedValue){
-
+                              return DropdownMenuItem<String>(
+                                  value: category['title'],
+                                  child: Text(category['title']));
+                            }).toList(),
+                            onChanged: (selectedValue) {
                               setState(() {
                                 selectedCategory = selectedValue!;
                               });
-                        });
-
-                      }else{
+                            });
+                      } else {
                         return const CircularProgressIndicator();
                       }
-
-
-                }),
-
-
+                    }),
 
                 TextField(
                   controller: titleC,
@@ -132,35 +117,63 @@ class _AddProductScreenState extends State<AddProductScreen> {
                   height: 16,
                 ),
 
-                ElevatedButton.icon(onPressed: (){
-                  selectImagesToDisplay();
-                },
+                ElevatedButton.icon(
+                  onPressed: () {
+                    selectImagesToDisplay();
+                  },
                   icon: const Icon(Icons.photo),
-                  label: const Text('Attach Images'),),
+                  label: const Text('Attach Images'),
+                ),
 
-                const SizedBox(height: 16,),
+                const SizedBox(
+                  height: 16,
+                ),
 
-                imagesPicked ?
-                    SizedBox(height: 300, child: GridView.builder(
-                        itemCount: images?.length,
-
-                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 3,
-                      crossAxisSpacing: 10,
-                      mainAxisSpacing: 10,
-                    ), itemBuilder: (context, index){
-                          return Image.file(images![index]);
-                    }),)
-
+                imagesPicked
+                    ? SizedBox(
+                        height: 300,
+                        child: GridView.builder(
+                            itemCount: images?.length,
+                            gridDelegate:
+                                const SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 3,
+                              crossAxisSpacing: 10,
+                              mainAxisSpacing: 10,
+                            ),
+                            itemBuilder: (context, index) {
+                              return Image.file(images![index]);
+                            }),
+                      )
                     : const SizedBox.shrink(),
 
-                const SizedBox(height: 16,),
-                ElevatedButton.icon(onPressed: (){
+                const SizedBox(
+                  height: 16,
+                ),
+                ElevatedButton.icon(
+                  onPressed: () {
+                    String title = titleC.text.trim();
+                    String desc = descC.text.trim();
+                    String price = priceC.text.trim();
 
-                },
-                  icon: const Icon(Icons.photo),
-                  label: const Text('Post Information'),),
+                    DocumentReference advertisementRef = FirebaseFirestore
+                        .instance
+                        .collection('advertisements')
+                        .doc();
 
+                    // Todo: Also store user information
+                    advertisementRef.set({
+                      'advertisementId': advertisementRef.id,
+                      'title': title,
+                      'desc': desc,
+                      'price': price,
+                      'category': selectedCategory,
+                      'postedOn': DateTime.now().millisecondsSinceEpoch,
+                      'postedBy': FirebaseAuth.instance.currentUser!.uid,
+                    });
+                  },
+                  icon: const Icon(Icons.arrow_upward),
+                  label: const Text('Upload'),
+                ),
               ],
             ),
           ),
