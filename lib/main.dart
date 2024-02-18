@@ -11,7 +11,10 @@ void main() async {
         apiKey: 'AIzaSyAJ18X4_0uuqEqPIeJv2pwSWpCjaUmxzX0',
         appId: '1:858765239468:android:f9fb95ca63cee2d497eb09',
         messagingSenderId: '858765239468',
-        projectId: 'ahsan-online-bazar'),
+        projectId: 'ahsan-online-bazar',
+        storageBucket: 'ahsan-online-bazar.appspot.com',
+
+    ),
   );
   runApp(const MyApp());
 }

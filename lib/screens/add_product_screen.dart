@@ -2,7 +2,9 @@ import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 
 class AddProductScreen extends StatefulWidget {
@@ -18,6 +20,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
 
   bool imagesPicked = false;
   List<File>? images = [];
+  List<String> photos = [];
 
   String selectedCategory = 'Mobile';
 
@@ -43,6 +46,8 @@ class _AddProductScreenState extends State<AddProductScreen> {
     List<XFile> xFiles = await ImagePicker().pickMultiImage();
 
     if (xFiles.isEmpty) return;
+
+    images?.clear();
 
     for (var xFile in xFiles) {
       images?.add(File(xFile.path));
@@ -94,6 +99,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
                   decoration: const InputDecoration(
                       hintText: 'Title', border: OutlineInputBorder()),
                 ),
+
                 const SizedBox(
                   height: 16,
                 ),
@@ -103,6 +109,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
                   decoration: const InputDecoration(
                       hintText: 'Description', border: OutlineInputBorder()),
                 ),
+
                 const SizedBox(
                   height: 16,
                 ),
@@ -150,7 +157,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
                   height: 16,
                 ),
                 ElevatedButton.icon(
-                  onPressed: () {
+                  onPressed: () async {
                     String title = titleC.text.trim();
                     String desc = descC.text.trim();
                     String price = priceC.text.trim();
@@ -161,7 +168,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
                         .doc();
 
                     // Todo: Also store user information
-                    advertisementRef.set({
+                    await advertisementRef.set({
                       'advertisementId': advertisementRef.id,
                       'title': title,
                       'desc': desc,
@@ -170,6 +177,37 @@ class _AddProductScreenState extends State<AddProductScreen> {
                       'postedOn': DateTime.now().millisecondsSinceEpoch,
                       'postedBy': FirebaseAuth.instance.currentUser!.uid,
                     });
+
+                    // upload photos to storage if any photo is attached
+
+                    if (imagesPicked) {
+                      // upload to storage
+
+                      int counter = 0;
+                      await Future.forEach(images!, (File image) async {
+                        String fileName =
+                            '${advertisementRef.id.substring(9)}-$counter';
+
+                        //print(fileName);
+                        Reference reference = FirebaseStorage.instance
+                            .ref()
+                            .child('advertisement_images')
+                            .child(fileName);
+                        UploadTask uploadTask = reference.putFile(
+                            image, SettableMetadata(contentType: 'image/png'));
+                        TaskSnapshot taskSnapshot =
+                            await uploadTask.whenComplete(() {});
+                        // get download url
+                        String url = await taskSnapshot.ref.getDownloadURL();
+                        photos.add(url);
+                        counter++;
+                      });
+
+                      // and then save those urls to firestore
+                      await advertisementRef.update({'photos': photos});
+                      Fluttertoast.showToast(msg: 'Advertisement Uploaded');
+
+                    }
                   },
                   icon: const Icon(Icons.arrow_upward),
                   label: const Text('Upload'),
