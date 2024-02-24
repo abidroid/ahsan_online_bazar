@@ -26,12 +26,25 @@ class _AddProductScreenState extends State<AddProductScreen> {
 
   late TextEditingController titleC, descC, priceC;
 
+  DocumentSnapshot? documentSnapshot;
+
   @override
   initState() {
     titleC = TextEditingController();
     descC = TextEditingController();
     priceC = TextEditingController();
+
+    getUserDetails();
     super.initState();
+  }
+
+  getUserDetails() async {
+    String uid = FirebaseAuth.instance.currentUser!.uid;
+    documentSnapshot = await FirebaseFirestore.instance.collection('users').doc(uid).get();
+
+    print(documentSnapshot?['name']);
+    print(documentSnapshot?['mobile']);
+
   }
 
   @override
@@ -168,6 +181,9 @@ class _AddProductScreenState extends State<AddProductScreen> {
                         .doc();
 
                     // Todo: Also store user information
+                    // Name
+                    // Mobile Number
+                    // city
                     await advertisementRef.set({
                       'advertisementId': advertisementRef.id,
                       'title': title,
@@ -175,7 +191,10 @@ class _AddProductScreenState extends State<AddProductScreen> {
                       'price': price,
                       'category': selectedCategory,
                       'postedOn': DateTime.now().millisecondsSinceEpoch,
-                      'postedBy': FirebaseAuth.instance.currentUser!.uid,
+                      'postedByUID': FirebaseAuth.instance.currentUser!.uid,
+                      'postedByName': documentSnapshot?['name'],
+                      'mobile': documentSnapshot?['mobile'],
+                      'city': documentSnapshot?['city'],
                     });
 
                     // upload photos to storage if any photo is attached
