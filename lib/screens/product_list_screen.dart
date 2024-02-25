@@ -1,5 +1,6 @@
 import 'package:ahsan_online_bazar/screens/add_product_screen.dart';
 import 'package:ahsan_online_bazar/screens/login_screen.dart';
+import 'package:ahsan_online_bazar/screens/product_detail_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -60,17 +61,36 @@ class _ProductListScreenState extends State<ProductListScreen> {
                 if (snapshot.hasData) {
                   var listOfAdvertisements = snapshot.data?.docs;
                   return Expanded(
-                    child: ListView.builder(
-                        itemCount: listOfAdvertisements?.length,
-                        itemBuilder: (context, index) {
-                          return Card(
-                            child: Column(
-                              children: [
-                                Text(listOfAdvertisements?[index]['title']),
-                              ],
-                            ),
-                          );
-                        }),
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: ListView.builder(
+                          itemCount: listOfAdvertisements?.length,
+                          itemBuilder: (context, index) {
+                            return Card(
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                        'Product: ${listOfAdvertisements?[index]['title']}'),
+                                    Text(
+                                        'Seller: ${listOfAdvertisements?[index]['postedByName']}'),
+                                    Text(
+                                        'Price: ${listOfAdvertisements?[index]['price']}'),
+                                    TextButton(onPressed: (){
+
+                                      Navigator.of(context).push(MaterialPageRoute(builder: (context){
+                                        return ProductDetailScreen(advertisement: listOfAdvertisements![index]);
+                                      }));
+
+                                    }, child: const Text('View More Details'))
+                                  ],
+                                ),
+                              ),
+                            );
+                          }),
+                    ),
                   );
                 } else {
                   return const CircularProgressIndicator();
