@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:gap/gap.dart';
 
 class ProductDetailScreen extends StatefulWidget {
   final DocumentSnapshot advertisement;
@@ -15,7 +16,69 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.advertisement['title']),
+        title: const Text('Product Details'),
+      ),
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Image.network(
+            widget.advertisement['photos'][0],
+            width: double.infinity,
+            height: 200,
+            fit: BoxFit.cover,
+          ),
+          const Gap(16),
+          SizedBox(
+            width: double.infinity,
+            child: Text(
+              widget.advertisement['title'],
+              textAlign: TextAlign.center,
+              style: const TextStyle(fontSize: 30, fontWeight: FontWeight.w600),
+            ),
+          ),
+          const Gap(16),
+
+          Text(
+            widget.advertisement['desc'],
+          ),
+          const Gap(16),
+          Row(
+            children: [
+              const SizedBox(width: 100, child: Text('City')),
+              Text(widget.advertisement['city'])
+            ],
+          ),
+
+          const Gap(16),
+          Row(
+            children: [
+              const SizedBox(width: 100, child: Text('Price')),
+              Text(widget.advertisement['price'])
+            ],
+          ),
+
+          const Gap(16),
+          Row(
+            children: [
+              const SizedBox(width: 100, child: Text('Seller')),
+              Text(widget.advertisement['postedByName'])
+            ],
+          ),
+
+          const Gap(16),
+          Row(
+            children: [
+               const SizedBox(width: 100, child: Text('Mobile')),
+              Text(widget.advertisement['mobile'])
+            ],
+          ),
+          Spacer(),
+          SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(onPressed: (){
+
+              }, child: const Text('Call Seller')))
+        ],
       ),
     );
   }
