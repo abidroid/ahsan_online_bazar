@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class ProductDetailScreen extends StatefulWidget {
   final DocumentSnapshot advertisement;
@@ -75,7 +76,19 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
           Spacer(),
           SizedBox(
               width: double.infinity,
-              child: ElevatedButton(onPressed: (){
+              child: ElevatedButton(onPressed: () async{
+
+                String mobileNum = widget.advertisement['mobile'];
+
+
+                final call = Uri.parse('tel:$mobileNum');
+
+
+                if (await canLaunchUrl(call)) {
+                    launchUrl(call);
+                } else {
+                    throw 'Could not launch $call';
+                }
 
               }, child: const Text('Call Seller')))
         ],
