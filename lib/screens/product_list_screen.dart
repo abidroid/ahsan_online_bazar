@@ -1,6 +1,7 @@
 import 'package:ahsan_online_bazar/screens/add_product_screen.dart';
 import 'package:ahsan_online_bazar/screens/login_screen.dart';
 import 'package:ahsan_online_bazar/screens/product_detail_screen.dart';
+import 'package:ahsan_online_bazar/utility/utility.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -74,6 +75,9 @@ class _ProductListScreenState extends State<ProductListScreen> {
                                   children: [
                                     Text(
                                         'Product: ${listOfAdvertisements?[index]['title']}'),
+
+                                    Text(
+                                        'Posted: ${getHumanReadableDate(listOfAdvertisements?[index]['postedOn'])}'),
                                     Text(
                                         'Seller: ${listOfAdvertisements?[index]['postedByName']}'),
                                     Text(
